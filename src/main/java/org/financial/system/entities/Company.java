@@ -5,13 +5,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.*;
+
+import org.financial.system.entities.users.User;
+
+@Entity
+@Table(name = "COMPANY")
 public class Company {
 
+    @Id
+    @Column(name = "NIT")
     private String NIT;
+
+    @Column(name = "NAME")
     private String name;
+
+    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
+
+    @Column(name = "ADDRESS")
     private String address;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Map<String, User> employees;
+
+    @ManyToMany
+    @JoinTable(name = "COMPANY_TRANSACTION",
+            joinColumns = @JoinColumn(name = "COMPANY_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TRANSACTION_ID"))
     private List<FinancialTransaction> transactions;
 
     public Company() {

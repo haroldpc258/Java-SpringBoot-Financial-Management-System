@@ -1,8 +1,19 @@
-package org.financial.system.entities;
+package org.financial.system.entities.users;
 
-public class User extends Employee{
+import javax.persistence.*;
 
+import org.financial.system.entities.Company;
+
+@Entity
+@Table(name = "USER")
+public class User extends Employee {
+
+
+    @JoinColumn(name = "ROLE")
+    @Enumerated(EnumType.STRING)
     private Role role;
+    @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
     private Company company;
 
     public User() {

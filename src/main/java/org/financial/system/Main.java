@@ -1,13 +1,11 @@
 package org.financial.system;
 
 import org.financial.system.entities.Company;
-import org.financial.system.entities.Employee;
-import org.financial.system.entities.SystemAdmin;
-import org.financial.system.entities.User;
-import org.financial.system.services.employees.SystemAdminService;
-import org.financial.system.services.employees.UserService;
+import org.financial.system.entities.users.SystemAdmin;
+import org.financial.system.entities.users.User;
+import org.financial.system.services.users.SystemAdminService;
+import org.financial.system.services.users.UserService;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

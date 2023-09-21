@@ -1,6 +1,9 @@
-package org.financial.system.services.employees;
+package org.financial.system.services.users;
 
 import org.financial.system.entities.*;
+import org.financial.system.entities.users.Employee;
+import org.financial.system.entities.users.SystemAdmin;
+import org.financial.system.entities.users.User;
 
 import java.util.Scanner;
 

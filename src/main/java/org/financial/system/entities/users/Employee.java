@@ -1,19 +1,41 @@
-package org.financial.system.entities;
+package org.financial.system.entities.users;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "EMPLOYEE")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Employee {
 
-    protected String name;
-    protected String email;
+    @Id
+    @Column(name = "DNI")
     protected String dni;
+
+    @Column(name = "NAME")
+    protected String name;
+
+    @Column(name = "EMAIL")
+    protected String email;
+
+    @Column(name = "PASSWORD")
     protected String password;
+
+    @Column(name = "IS_LOGGED_IN")
     protected boolean isLoggedIn;
 
     public Employee() {
     }
+
 
     public Employee(String name, String email, String dni, String password) {
         this.name = name;

@@ -1,10 +1,24 @@
-package org.financial.system.entities;
+package org.financial.system.entities.users;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemAdmin extends Employee{
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
+import org.financial.system.entities.Company;
+
+@Entity
+@Table(name = "SYSTEM_ADMIN")
+public class SystemAdmin extends Employee {
+
+    @ManyToMany
+    @JoinTable(name = "SYSTEM_ADMIN_COMPANY",
+            joinColumns = @JoinColumn(name = "SYSTEM_ADMIN_ID"),
+            inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
     private List<Company> companies;
 
     public SystemAdmin() {

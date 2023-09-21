@@ -2,12 +2,34 @@ package org.financial.system.entities;
 
 import java.time.LocalDate;
 
+import javax.persistence.*;
+
+import org.financial.system.entities.users.Employee;
+
+@Entity
+@Table(name = "FINANCIAL_TRANSACTION")
 public class FinancialTransaction {
 
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue
+    private Long id;
+
+    @Column(name = "TYPE")
+    @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Column(name = "AMOUNT")
     private Double amount;
+
+    @ManyToOne
+    @JoinColumn(name = "EMPLOYEE_ID")
     private Employee createdBy;
+
+    @Column(name = "CREATED_ON")
     private LocalDate createdOn;
+
+    @Column(name = "CONCEPT")
     private String concept;
 
     public FinancialTransaction() {
