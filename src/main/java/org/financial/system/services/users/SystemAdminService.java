@@ -5,13 +5,17 @@ import org.financial.system.entities.users.Employee;
 import org.financial.system.entities.users.SystemAdmin;
 import org.financial.system.entities.users.User;
 
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SystemAdminService extends UserService {
 
     public SystemAdminService() {
         super();
     }
 
-    public Company createCompany() {
+    public void createCompany(SystemAdmin systemAdmin) {
 
         System.out.println("\nCREANDO UNA NUEVA EMPRESA EN EL SISTEMA");
         Company newCompany = new Company();
@@ -31,7 +35,8 @@ public class SystemAdminService extends UserService {
         System.out.println("\nSe ha registrados exitosamente la Empresa " + newCompany.getName()
                 + " en el sistema...");
 
-        return newCompany;
+        systemAdmin.getCompanies().add(newCompany);
+        insertRegister(newCompany);
     }
 
     public Employee createEmployee(Company company) {
@@ -64,40 +69,46 @@ public class SystemAdminService extends UserService {
         User newUser = new User(name, email, dni, password, role, company);
         addEmployeeToCompany(newUser, company);
 
+        insertRegister(newUser);
+
         return newUser;
     }
 
     private void addEmployeeToCompany(User user, Company company) {
-        company.getEmployees().put(user.getDni(), user);
+        company.getEmployees().add(user);
     }
 
     public Company selectCompany(SystemAdmin systemAdmin) {
 
-        viewCompanies(systemAdmin);
+        List<Company> companies = viewCompanies(systemAdmin);
 
         System.out.print("Seleccione una Empresa: ");
-        return systemAdmin.getCompanies().get(scanner.nextInt() - 1);
+        return companies.get(scanner.nextInt() - 1);
     }
 
-    public void viewCompanies(SystemAdmin systemAdmin) {
+    public List<Company> viewCompanies(SystemAdmin systemAdmin) {
 
         System.out.println("\nLISTA DE EMPRESAS");
 
-        for (int i = 0; i < systemAdmin.getCompanies().size(); i++) {
-            System.out.println((i + 1) + ". " + systemAdmin.getCompanies().get(i));
+        List<Company> companies = selectEntity(Company.class);
+
+        for (int i = 0; i < companies.size(); i++) {
+            System.out.println((i + 1) + ". " + companies.get(i));
         }
+
+        return companies;
     }
 
     public void viewEmployees(Company company) {
 
         System.out.println("\nLISTA DE EMPLEADOS");
 
-        int indice = 1;
-        for (User user : company.getEmployees().values()) {
-            System.out.println(indice + ". " + user);
-            indice++;
-        }
+        List<User> users = selectEntity(User.class);
 
+        for (int i = 0; i < users.size(); i++) {
+            System.out.println((i + 1) + ". " + users.get(i));
+        }
     }
+
 
 }

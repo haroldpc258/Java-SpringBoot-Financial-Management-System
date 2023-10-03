@@ -4,16 +4,22 @@ import org.financial.system.entities.*;
 import org.financial.system.entities.users.Employee;
 import org.financial.system.entities.users.SystemAdmin;
 import org.financial.system.entities.users.User;
+import org.financial.system.util.HibernateUtil;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class UserService {
 
     Scanner scanner;
+    EntityManager em;
 
     public UserService() {
         scanner = new Scanner(System.in).useDelimiter("\n");
+        em = HibernateUtil.getEntityManager();
     }
 
     public void viewTransactions(Company company) {
@@ -46,6 +52,8 @@ public class UserService {
 
             transaction.setCreatedBy(user);
             company.getTransactions().add(transaction);
+
+            insertRegister(transaction);
         } else {
             System.out.println("\nLo siento, no tiene permisos para realizar esta acción...");
         }
@@ -58,6 +66,24 @@ public class UserService {
         } else {
             return ((User) user).getRole().equals(User.Role.ADMINISTRATOR);
         }
+    }
+
+    protected  <T> void insertRegister(T entity) {
+        // Iniciar una transacción
+        em.getTransaction().begin();
+
+        // Guardar la entidad en la base de datos
+        em.persist(entity);
+
+        // Confirmar la transacción
+        em.getTransaction().commit();
+    }
+
+    protected <T> List<T> selectEntity(Class<T> entityClass) {
+
+        TypedQuery<T> query = em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass);
+
+        return query.getResultList();
     }
 
 }

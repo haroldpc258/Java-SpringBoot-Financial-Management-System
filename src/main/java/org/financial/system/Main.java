@@ -5,7 +5,9 @@ import org.financial.system.entities.users.SystemAdmin;
 import org.financial.system.entities.users.User;
 import org.financial.system.services.users.SystemAdminService;
 import org.financial.system.services.users.UserService;
+import org.financial.system.util.HibernateUtil;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,6 +25,22 @@ public class Main {
         systemAdmins.add(defaultAdmin);
 
         login(scanner, systemAdmins, as, us);
+
+        // Crear el EntityManager
+        EntityManager em = HibernateUtil.getEntityManager();
+
+        /*// Iniciar una transacción
+        em.getTransaction().begin();
+
+        // Guardar la entidad en la base de datos
+        em.persist(company);
+
+        // Confirmar la transacción
+        em.getTransaction().commit();*/
+
+        // Cerrar el EntityManager
+        em.close();
+        HibernateUtil.closeEntityManagerFactory();
     }
 
     public static void login(Scanner scanner, List<SystemAdmin> systemAdmins, SystemAdminService as, UserService us) {
@@ -42,7 +60,7 @@ public class Main {
                     success = menuAdmin(scanner, admin, as);
                 }
 
-                for (Company company : admin.getCompanies()) {
+                /*for (Company company : admin.getCompanies()) {
                     if (company.getEmployees().containsKey(dni)) {
                         User user = company.getEmployees().get(dni);
 
@@ -50,7 +68,7 @@ public class Main {
                             success = menuUser(scanner, user, us);
                         }
                     }
-                }
+                }*/
             }
 
             if (!success) {
@@ -76,44 +94,25 @@ public class Main {
             option = scanner.nextInt();
 
             try {
+                List<Company> companies = systemAdmin.getCompanies();
                 switch (option) {
                     case 1 -> {
-                        systemAdmin.getCompanies().add(as.createCompany());
+                        as.createCompany(systemAdmin);
                     }
                     case 2 -> {
-                        if (!systemAdmin.getCompanies().isEmpty()) {
-                            as.createEmployee(as.selectCompany(systemAdmin));
-                        } else {
-                            System.out.println("\nAún no hay empresas en la cuales registrar un empleado...");
-                        }
+                        as.createEmployee(as.selectCompany(systemAdmin));
                     }
                     case 3 -> {
-                        if (!systemAdmin.getCompanies().isEmpty()) {
-                            as.makeTransaction(as.selectCompany(systemAdmin), systemAdmin);
-                        } else {
-                            System.out.println("\nAún no hay empresas en la cuales realizar movimientos...");
-                        }
+                        as.makeTransaction(as.selectCompany(systemAdmin), systemAdmin);
                     }
                     case 4 -> {
-                        if (!systemAdmin.getCompanies().isEmpty()) {
-                            as.viewEmployees(as.selectCompany(systemAdmin));
-                        } else {
-                            System.out.println("\nAún no hay empresas en el sistema...");
-                        }
+                        as.viewEmployees(as.selectCompany(systemAdmin));
                     }
                     case 5 -> {
-                        if (!systemAdmin.getCompanies().isEmpty()) {
-                            as.viewCompanies(systemAdmin);
-                        } else {
-                            System.out.println("\nAún no hay empresas en el sistema...");
-                        }
+                        as.viewCompanies(systemAdmin);
                     }
                     case 6 -> {
-                        if (!systemAdmin.getCompanies().isEmpty()) {
-                            as.viewTransactions(as.selectCompany(systemAdmin));
-                        } else {
-                            System.out.println("\nAún no hay empresas en el sistema");
-                        }
+                        as.viewTransactions(as.selectCompany(systemAdmin));
                     }
                     case 0 -> {
                     }

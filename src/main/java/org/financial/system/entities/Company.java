@@ -27,7 +27,7 @@ public class Company {
     private String address;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Map<String, User> employees;
+    private List<User> employees;
 
     @ManyToMany
     @JoinTable(name = "COMPANY_TRANSACTION",
@@ -36,11 +36,11 @@ public class Company {
     private List<FinancialTransaction> transactions;
 
     public Company() {
-        employees = new HashMap<>();
+        employees = new ArrayList<>();
         transactions = new ArrayList<>();
     }
 
-    public Company(String NIT, String name, String phoneNumber, String address, Map<String, User> employees, List<FinancialTransaction> transactions) {
+    public Company(String NIT, String name, String phoneNumber, String address, List<User> employees, List<FinancialTransaction> transactions) {
         this.NIT = NIT;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -81,11 +81,11 @@ public class Company {
         this.address = address;
     }
 
-    public Map<String, User> getEmployees() {
+    public List<User> getEmployees() {
         return employees;
     }
 
-    public void setEmployees(Map<String, User> employees) {
+    public void setEmployees(List<User> employees) {
         this.employees = employees;
     }
 

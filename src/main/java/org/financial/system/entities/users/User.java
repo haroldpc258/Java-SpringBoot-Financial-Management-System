@@ -8,8 +8,7 @@ import org.financial.system.entities.Company;
 @Table(name = "USER")
 public class User extends Employee {
 
-
-    @JoinColumn(name = "ROLE")
+    @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     private Role role;
     @ManyToOne
