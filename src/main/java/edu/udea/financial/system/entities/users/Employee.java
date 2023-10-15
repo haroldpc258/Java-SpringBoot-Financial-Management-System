@@ -1,22 +1,28 @@
-package org.financial.system.entities.users;
+package edu.udea.financial.system.entities.users;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-
 @Entity
 @Table(name = "EMPLOYEE")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = User.class, name = "User"),
+        @JsonSubTypes.Type(value = SystemAdmin.class, name = "SystemAdmin")
+})
 public abstract class Employee {
 
     @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "DNI")
     protected String dni;
 
@@ -35,12 +41,19 @@ public abstract class Employee {
     public Employee() {
     }
 
-
-    public Employee(String name, String email, String dni, String password) {
+    public Employee(String dni, String name, String email, String password) {
+        this.dni = dni;
         this.name = name;
         this.email = email;
-        this.dni = dni;
         this.password = hashPassword(password);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

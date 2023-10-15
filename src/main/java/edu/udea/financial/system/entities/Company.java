@@ -1,21 +1,23 @@
-package org.financial.system.entities;
+package edu.udea.financial.system.entities;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import edu.udea.financial.system.entities.users.User;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.persistence.*;
-
-import org.financial.system.entities.users.User;
 
 @Entity
 @Table(name = "COMPANY")
 public class Company {
 
     @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "NIT")
-    private String NIT;
+    private String nit;
 
     @Column(name = "NAME")
     private String name;
@@ -27,12 +29,10 @@ public class Company {
     private String address;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<User> employees;
 
-    @ManyToMany
-    @JoinTable(name = "COMPANY_TRANSACTION",
-            joinColumns = @JoinColumn(name = "COMPANY_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TRANSACTION_ID"))
+    @OneToMany
     private List<FinancialTransaction> transactions;
 
     public Company() {
@@ -40,8 +40,8 @@ public class Company {
         transactions = new ArrayList<>();
     }
 
-    public Company(String NIT, String name, String phoneNumber, String address, List<User> employees, List<FinancialTransaction> transactions) {
-        this.NIT = NIT;
+    public Company(String nit, String name, String phoneNumber, String address, List<User> employees, List<FinancialTransaction> transactions) {
+        this.nit = nit;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -49,12 +49,20 @@ public class Company {
         this.transactions = transactions;
     }
 
-    public String getNIT() {
-        return NIT;
+    public Long getId() {
+        return id;
     }
 
-    public void setNIT(String NIT) {
-        this.NIT = NIT;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNit() {
+        return nit;
+    }
+
+    public void setNit(String nit) {
+        this.nit = nit;
     }
 
     public String getName() {
@@ -100,7 +108,7 @@ public class Company {
     @Override
     public String toString() {
         return "Company -->" +
-                "NIT='" + NIT + '\'' +
+                "nit='" + nit + '\'' +
                 ", name='" + name + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", address='" + address + '\'';

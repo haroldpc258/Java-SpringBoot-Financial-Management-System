@@ -1,18 +1,19 @@
-package org.financial.system.entities;
+package edu.udea.financial.system.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import edu.udea.financial.system.entities.users.Employee;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-import javax.persistence.*;
-
-import org.financial.system.entities.users.Employee;
-
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Table(name = "FINANCIAL_TRANSACTION")
 public class FinancialTransaction {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "TYPE")
@@ -51,6 +52,14 @@ public class FinancialTransaction {
         this.concept = concept;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Type getType() {
         return type;
     }
@@ -81,6 +90,10 @@ public class FinancialTransaction {
 
     public void setCreatedOn(LocalDate createdOn) {
         this.createdOn = createdOn;
+    }
+
+    public void setCreatedOn(String createdOn) {
+        this.createdOn = LocalDate.parse(createdOn);
     }
 
     public String getConcept() {
