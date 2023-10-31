@@ -32,7 +32,7 @@ public class Company {
     @JsonManagedReference
     private List<User> employees;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FinancialTransaction> transactions;
 
     public Company() {

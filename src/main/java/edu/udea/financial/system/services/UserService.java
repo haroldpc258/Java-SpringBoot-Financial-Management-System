@@ -1,5 +1,6 @@
 package edu.udea.financial.system.services;
 
+import edu.udea.financial.system.entities.Company;
 import edu.udea.financial.system.entities.users.User;
 import edu.udea.financial.system.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,17 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CompanyService companyService;
 
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
-    public User createUser(User user) {
+    public User createUser(Long companyId, User user) {
+        Company company =  companyService.getCompanyById(companyId);
+        company.getEmployees().add(user);
+        companyService.createCompany(company);
         return userRepository.save(user);
     }
 

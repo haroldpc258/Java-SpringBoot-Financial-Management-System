@@ -12,10 +12,7 @@ import java.util.Base64;
 @Table(name = "EMPLOYEE")
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = User.class, name = "User"),
-        @JsonSubTypes.Type(value = SystemAdmin.class, name = "SystemAdmin")
-})
+@JsonSubTypes({ @JsonSubTypes.Type(value = User.class, name = "User") })
 public abstract class Employee {
 
     @Id

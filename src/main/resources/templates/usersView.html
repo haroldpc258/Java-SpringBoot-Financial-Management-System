@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mis Empleados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <main>
+        <div class="px-4 py-5 my-3 text-center">
+            <h1 class="display-5 fw-bold mb-1">Empleados</h1>
+            <a th:href="@{'/enterprises/' + ${company.getId()} + '/users/create'}" class="col-md-6 btn btn-primary fw-bold btn-lg btn-block my-5">Nuevo Empleado</a>
+            <div class="d-flex justify-content-center mt-3">
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    <div th:each="user : ${company.getEmployees()}" class="col d-flex justify-content-center">
+                        <div class="card" style="width: 18rem;">
+                            <div th:switch="${user.getRole()}">
+                                <img th:case="${user.getRole().ADMINISTRATOR}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/5238/5238791.png" alt="movimientos" style="width: 150px">
+                                <img th:case="${user.getRole().OPERATIONAL}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/4247/4247142.png" alt="movimientos" style="width: 150px">
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title" th:text="${user.getName()}"></h3>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex flex-column align-items-center">
+                                        <div><span class="fw-bold">Tipo</span></div>
+                                        <div><span th:text="${user.getRole().getType()}"></span></div>
+                                    </li>
+                                    <li class="list-group-item d-flex flex-column align-items-center">
+                                        <div><span class="fw-bold">DNI</span></div>
+                                        <div><span th:text="${user.getDni()}"></span></div>
+                                    </li>
+                                    <li class="list-group-item d-flex flex-column align-items-center">
+                                        <div><span class="fw-bold">Email</span></div>
+                                        <div><span th:text="${user.getEmail()}"></span></div>
+                                    </li>
+                                </ul>
+                                <a th:href="@{'/enterprises/' + ${company.getId()} + '/users/' + ${user.getId()}}" class="btn btn-primary col-md-4">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

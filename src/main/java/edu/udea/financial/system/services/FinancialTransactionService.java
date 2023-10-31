@@ -27,13 +27,16 @@ public class FinancialTransactionService {
     public FinancialTransaction createFinancialTransaction(Long companyId, FinancialTransaction transaction) {
         Company company =  companyService.getCompanyById(companyId);
         company.getTransactions().add(transaction);
-        transaction = financialTransactionRepository.save(transaction);
         companyService.createCompany(company);
-        return transaction;
+        return financialTransactionRepository.save(transaction);
     }
 
     public FinancialTransaction getTransactionById(Long id) {
         return financialTransactionRepository.findById(id).get();
+    }
+
+    public void updateTransaction(FinancialTransaction transaction) {
+        financialTransactionRepository.save(transaction);
     }
 
     public FinancialTransaction patchFinancialTransactionById(Long companyId, Long id, Map<String, Object> updates) {
@@ -54,11 +57,11 @@ public class FinancialTransactionService {
         return transaction;
     }
 
-    public String deleteFinancialTransactionById(Long companyId, Long id) {
+    public void deleteFinancialTransactionById(Long companyId, Long id) {
         Company company =  companyService.getCompanyById(companyId);
         company.getTransactions().remove(getTransactionById(id));
         financialTransactionRepository.deleteById(id);
-        return "La transacción: " + id + " se ha eliminado";
+        companyService.createCompany(company);
     }
 
     public boolean transactionExists(Long companyId, Long id) {

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.udea.financial.system.entities.users.Employee;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
@@ -28,23 +29,23 @@ public class FinancialTransaction {
     private Employee createdBy;
 
     @Column(name = "CREATED_ON")
-    private LocalDate createdOn;
+    private LocalDateTime createdOn;
 
     @Column(name = "CONCEPT")
     private String concept;
 
     public FinancialTransaction() {
-        createdOn = LocalDate.now();
+        createdOn = LocalDateTime.now();
     }
 
     public FinancialTransaction(Type type, Double amount, String concept) {
         this.type = type;
         this.amount = amount;
         this.concept = concept;
-        createdOn = LocalDate.now();
+        createdOn = LocalDateTime.now();
     }
 
-    public FinancialTransaction(Type type, Double amount, Employee createdBy, LocalDate createdOn, String concept) {
+    public FinancialTransaction(Type type, Double amount, Employee createdBy, LocalDateTime createdOn, String concept) {
         this.type = type;
         this.amount = amount;
         this.createdBy = createdBy;
@@ -84,16 +85,17 @@ public class FinancialTransaction {
         this.createdBy = createdBy;
     }
 
-    public LocalDate getCreatedOn() {
-        return createdOn;
+    public String getCreatedOn() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return createdOn.format(formatter);
     }
 
-    public void setCreatedOn(LocalDate createdOn) {
+    public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
     }
 
     public void setCreatedOn(String createdOn) {
-        this.createdOn = LocalDate.parse(createdOn);
+        this.createdOn = LocalDateTime.parse(createdOn);
     }
 
     public String getConcept() {
@@ -117,15 +119,5 @@ public class FinancialTransaction {
         public String getType() {
             return type;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "FinancialTransaction -->" +
-                "type=" + type +
-                ", amount=" + amount +
-                ", createdBy=" + createdBy +
-                ", createdOn=" + createdOn +
-                ", concept='" + concept + '\'';
     }
 }

@@ -33,6 +33,14 @@ public class User extends Employee {
         this.role = role;
     }
 
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     public enum Role {
         ADMINISTRATOR("Administrador"),
         OPERATIONAL("Operativo");

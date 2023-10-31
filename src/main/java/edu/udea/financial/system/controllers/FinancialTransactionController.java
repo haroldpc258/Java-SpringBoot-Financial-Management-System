@@ -6,11 +6,14 @@ import edu.udea.financial.system.services.FinancialTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/enterprises/{companyId}/movements")
 public class FinancialTransactionController {
 
@@ -20,14 +23,52 @@ public class FinancialTransactionController {
     private CompanyService companyService;
 
     @GetMapping
+    public String getFinancialTransactions(Model model, @PathVariable Long companyId) {
+        model.addAttribute("companyId", companyId);
+        model.addAttribute("transactions", transactionService.getFinancialTransactions(companyId));
+        return "transactionsView";
+    }
+    @GetMapping("/create")
+    public String createFinancialTransaction(@PathVariable Long companyId, Model model) {
+        model.addAttribute("companyId", companyId);
+        model.addAttribute("newTransaction", new FinancialTransaction());
+        return "createTransactionView";
+    }
+
+    @PostMapping("/create")
+    public RedirectView createFinancialTransaction(@PathVariable Long companyId, @ModelAttribute FinancialTransaction transaction) {
+        transactionService.createFinancialTransaction(companyId, transaction);
+        return new RedirectView("/enterprises/" + companyId + "/movements");
+    }
+
+    @GetMapping("/{id}/update")
+    public String updateFinancialTransaction(@PathVariable Long companyId, @PathVariable Long id, Model model) {
+        model.addAttribute("companyId", companyId);
+        model.addAttribute("transaction", transactionService.getTransactionById(id));
+        return "updateTransactionView";
+    }
+
+    @PostMapping("/{id}/update")
+    public RedirectView updateFinancialTransaction(@PathVariable Long companyId, @ModelAttribute FinancialTransaction transaction) {
+        transactionService.updateTransaction(transaction);
+        return new RedirectView("/enterprises/" + companyId + "/movements");
+    }
+
+    @DeleteMapping("/{id}")
+    public RedirectView deleteTransactionById(@PathVariable Long companyId,  @PathVariable Long id) {
+        transactionService.deleteFinancialTransactionById(companyId, id);
+        return new RedirectView("/enterprises/" + companyId + "/movements");
+    }
+
+    /*@GetMapping
     public ResponseEntity<?> getFinancialTransactions(@PathVariable Long companyId) {
         if (companyService.companyExists(companyId)) {
             return new ResponseEntity<>(transactionService.getFinancialTransactions(companyId), HttpStatus.OK);
         }
         return companyNotFound(companyId);
-    }
+    }*/
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<?> createFinancialTransaction(@PathVariable Long companyId, @RequestBody FinancialTransaction transaction) {
         if (companyService.companyExists(companyId)) {
             return new ResponseEntity<>(transactionService.createFinancialTransaction(companyId, transaction), HttpStatus.OK);
@@ -66,7 +107,7 @@ public class FinancialTransactionController {
     }
 
     @DeleteMapping ("/{id}")
-    public ResponseEntity<?> deleteCompanyById(@PathVariable Long companyId, @PathVariable Long id) {
+    public ResponseEntity<?> deleteTransactionById(@PathVariable Long companyId, @PathVariable Long id) {
         if (companyService.companyExists(companyId)) {
             if (transactionService.transactionExists(companyId, id)) {
                 return new ResponseEntity<>(transactionService.deleteFinancialTransactionById(companyId, id), HttpStatus.OK);
@@ -82,5 +123,5 @@ public class FinancialTransactionController {
 
     private ResponseEntity<?> transactionNotFound(Long id) {
         return new ResponseEntity<>("No se encontró la transacción con ID: " + id, HttpStatus.NOT_FOUND);
-    }
+    }*/
 }
