@@ -1,61 +1,37 @@
 package edu.udea.financial.system.services;
 
-import edu.udea.financial.system.entities.Company;
+import edu.udea.financial.system.entities.users.SecondaryUser;
 import edu.udea.financial.system.entities.users.User;
-import edu.udea.financial.system.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    SecondaryUserService secondaryUserService;
     @Autowired
-    private CompanyService companyService;
+    PrincipalUserService principalUserService;
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
+    public String verifyRoleByEmail(OidcUser profile) {
 
-    public User createUser(Long companyId, User user) {
-        Company company =  companyService.getCompanyById(companyId);
-        company.getEmployees().add(user);
-        companyService.createCompany(company);
-        return userRepository.save(user);
-    }
+        String email = profile.getEmail();
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).get();
-    }
-
-    public User patchUserById(Long id, Map<String, String> updates) {
-
-        User user = getUserById(id);
-
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "dni" -> user.setDni(value);
-                case "name" -> user.setName(value);
-                case "email" -> user.setEmail(value);
-                case "password" -> user.setPassword(value);
-                case "role" -> user.setRole(User.Role.valueOf(value));
-                default -> throw new IllegalArgumentException("Campo de actualización no válido: " + key);
+        if (secondaryUserService.userExistsByEmail(email)) {
+            SecondaryUser user = secondaryUserService.findByEmail(email);
+            if (user.getRole().equals(SecondaryUser.Role.ADMINISTRATOR)) {
+                return "MODERATOR";
             }
-        });
-        userRepository.save(user);
-        return user;
+            return "OPERATOR";
+        }
+        return "ADMIN";
     }
 
-    public String deleteUserById(Long id) {
-        userRepository.deleteById(id);
-        return "El usuario con ID: " + id + " se ha eliminado";
-    }
-
-    public boolean userExists(Long id) {
-        return userRepository.existsById(id);
+    public User getUserByEmail(String email) {
+        if (secondaryUserService.userExistsByEmail(email)) {
+            return secondaryUserService.findByEmail(email);
+        }
+        return principalUserService.findByEmail(email);
     }
 }

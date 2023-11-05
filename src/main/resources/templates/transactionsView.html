@@ -3,23 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, secondaryUser-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mis Movimientos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="/css/styles.css" rel="stylesheet"/>
 </head>
-<body>
+<body class="bg-light">
 <main>
+    <header>
+        <div class="position-fixed mt-2 mx-4 p-4">
+            <a th:href="@{'/' + ${userId} + '/enterprises/' + ${companyId}}">
+                <i class="bi bi-arrow-left-circle-fill text-gradient" style="font-size: 2.5rem;"></i>
+            </a>
+        </div>
+    </header>
     <div class="px-4 py-5 my-3 text-center">
-        <h1 class="display-5 fw-bold mb-1">Movimientos</h1>
-        <a th:href="@{'/enterprises/' + ${companyId} + '/movements/create'}" class="col-md-6 btn btn-primary fw-bold btn-lg btn-block my-5">Realizar Movimiento</a>
+        <h1 class="display-3 fw-bolder mb-1"><span class="text-gradient d-inline">Movimientos</span></h1>
+        <div th:if="${!role.equals('OPERATOR')}">
+            <a th:href="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/movements/create'}"
+               class="col-md-6 btn btn-primary fw-bold btn-lg btn-block my-5">Realizar movimiento</a>
+        </div>
         <div class="d-flex justify-content-center mt-3">
             <div class="row row-cols-1 row-cols-md-4 g-4">
-                <div th:each="transaction : ${transactions}" class="col d-flex justify-content-center">
-                    <div class="card" style="width: 18rem;">
+                <div th:each="transaction : ${transactions}" class="col d-flex justify-content-center mx-auto mr-2">
+                    <div class="card" style="min-width: 18rem; width: auto; max-width: 100%;">
                         <div th:switch="${transaction.getType()}">
-                            <img th:case="${transaction.getType().EXPENSE}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/5501/5501391.png" alt="movimientos" style="width: 150px">
-                            <img th:case="${transaction.getType().INCOME}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/5501/5501492.png" alt="movimientos" style="width: 150px">
+                            <img th:case="${transaction.getType().EXPENSE}" class="card-img-top"
+                                 src="https://cdn-icons-png.flaticon.com/512/5501/5501391.png" alt="movimientos"
+                                 style="width: 150px">
+                            <img th:case="${transaction.getType().INCOME}" class="card-img-top"
+                                 src="https://cdn-icons-png.flaticon.com/512/5501/5501492.png" alt="movimientos"
+                                 style="width: 150px">
                         </div>
                         <div class="card-body">
                             <h3 class="card-title" th:text="${transaction.getAmount()}"></h3>
@@ -40,16 +57,28 @@
                                     <div class="d-flex flex-column align-items-center">
                                         <div><span class="fw-bold">Responsable</span></div>
                                     </div>
-                                    <div th:switch="${transaction.getCreatedBy() instanceof T(edu.udea.financial.system.entities.users.User)}">
-                                        <a th:case="true" th:href="@{'/enterprises/' + ${companyId} + '/users/' + ${transaction.getCreatedBy().getId()}}" class="btn btn-primary col-md-9 mt-1">Revisar</a>
-                                        <a th:case="false" class="btn btn-primary col-md-9 mt-1 disabled">Administrador</a>
+                                    <div th:switch="${transaction.getCreatedBy() instanceof T(edu.udea.financial.system.entities.users.SecondaryUser)}">
+                                        <a th:case="true"
+                                           th:href="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/users'}"
+                                           class="btn btn-light col-md-9 mt-1"
+                                           th:text="${transaction.getCreatedBy().getName()}"></a>
+                                        <a th:case="false" class="btn btn-light col-md-9 mt-1"
+                                           th:text="${transaction.getCreatedBy().getName()}"></a>
                                     </div>
                                 </li>
                             </ul>
-                            <a th:href="@{'/enterprises/' + ${companyId} + '/movements/' + ${transaction.getId()} + '/update'}" class="btn btn-secondary col-md-8">Modificar</a>
-                            <form th:action="@{'/enterprises/' + ${companyId} + '/movements/' + ${transaction.getId()}}" th:method="delete">
-                                <button class="col-md-8 btn btn-danger mt-2" type="submit">Eliminar</button>
-                            </form>
+                            <div th:if="${!role.equals('OPERATOR')}">
+                                <a th:href="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/movements/' + ${transaction.getId()} + '/update'}"
+                                   class="btn btn-primary col-md-8">Modificar</a>
+                            </div>
+                            <div th:if="${role.equals('ADMIN')}">
+                                <form th:action="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/movements/' + ${transaction.getId()}}"
+                                      th:method="delete">
+                                    <button onclick="return confirm('¿Estás seguro de que deseas eliminar este movimiento?')"
+                                            class="col-md-8 btn btn-danger mt-2" type="submit">Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,6 +86,17 @@
         </div>
     </div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<footer class="bg-light py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="text-muted col-auto">
+                <div class="small m-0">Copyright &copy; 2023 Proyecto Desarrollo de Software</div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>

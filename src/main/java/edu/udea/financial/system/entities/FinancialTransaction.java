@@ -1,7 +1,8 @@
 package edu.udea.financial.system.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import edu.udea.financial.system.entities.users.Employee;
+import edu.udea.financial.system.entities.users.PrincipalUser;
+import edu.udea.financial.system.entities.users.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,8 +26,8 @@ public class FinancialTransaction {
     private Double amount;
 
     @ManyToOne
-    @JoinColumn(name = "EMPLOYEE_ID")
-    private Employee createdBy;
+    @JoinColumn(name = "USER_ID")
+    private User createdBy;
 
     @Column(name = "CREATED_ON")
     private LocalDateTime createdOn;
@@ -45,7 +46,7 @@ public class FinancialTransaction {
         createdOn = LocalDateTime.now();
     }
 
-    public FinancialTransaction(Type type, Double amount, Employee createdBy, LocalDateTime createdOn, String concept) {
+    public FinancialTransaction(Type type, Double amount, PrincipalUser createdBy, LocalDateTime createdOn, String concept) {
         this.type = type;
         this.amount = amount;
         this.createdBy = createdBy;
@@ -77,17 +78,21 @@ public class FinancialTransaction {
         this.amount = amount;
     }
 
-    public Employee getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
     public String getCreatedOn() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return createdOn.format(formatter);
+    }
+
+    public LocalDateTime getCreatedOnLocalDate() {
+        return createdOn;
     }
 
     public void setCreatedOn(LocalDateTime createdOn) {

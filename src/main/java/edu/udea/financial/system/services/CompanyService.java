@@ -1,6 +1,7 @@
 package edu.udea.financial.system.services;
 
 import edu.udea.financial.system.entities.Company;
+import edu.udea.financial.system.entities.users.PrincipalUser;
 import edu.udea.financial.system.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,31 @@ public class CompanyService {
 
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private PrincipalUserService userService;
 
-    public List<Company> getCompanies() {
-        return companyRepository.findAll();
+    public List<Company> getCompanies(Long userId) {
+        PrincipalUser principalUser = userService.getUserById(userId);
+        return principalUser.getCompanies();
     }
 
-    public Company createCompany(Company company) {
+    public Company createCompany(Long userId, Company company) {
+        PrincipalUser user = userService.getUserById(userId);
+        user.getCompanies().add(company);
+        userService.saveUser(user);
+        company.setOwner(user);
+        return companyRepository.save(company);
+    }
+
+    public Company updateCompany(Company updatedCompany) {
+        Company company = getCompanyById(updatedCompany.getId());
+        updatedCompany.setOwner(company.getOwner());
+        updatedCompany.setEmployees(company.getEmployees());
+        updatedCompany.setTransactions(company.getTransactions());
+        return saveCompany(updatedCompany);
+    }
+
+    public Company saveCompany(Company company) {
         return companyRepository.save(company);
     }
 
@@ -26,26 +46,12 @@ public class CompanyService {
         return companyRepository.findById(id).get();
     }
 
-    public Company patchCompanyById(Long id, Map<String, String> updates) {
 
-        Company company = getCompanyById(id);
-
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "nit" -> company.setNit(value);
-                case "name" -> company.setName(value);
-                case "phoneNumber" -> company.setPhoneNumber(value);
-                case "address" -> company.setAddress(value);
-                default -> throw new IllegalArgumentException("Campo de actualización no válido: " + key);
-            }
-        });
-        companyRepository.save(company);
-        return company;
-    }
-
-    public String deleteCompanyById(Long id) {
+    public void deleteCompanyById(Long userId, Long id) {
+        PrincipalUser user = userService.getUserById(userId);
+        user.getCompanies().remove(getCompanyById(id));
+        userService.saveUser(user);
         companyRepository.deleteById(id);
-        return "La compañía con ID: " + id + " se ha eliminado";
     }
 
     public boolean companyExists(Long id) {

@@ -1,64 +1,76 @@
 package edu.udea.financial.system.entities.users;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import edu.udea.financial.system.entities.Company;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "USER")
-public class User extends Employee {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User {
 
-    @Column(name = "ROLE")
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "COMPANY_ID")
-    private Company company;
+    @Column(name = "AUTH0_ID", unique = true)
+    protected String auth0Id;
+
+    @Column(name = "NAME")
+    protected String name;
+
+    @Column(name = "EMAIL", unique = true)
+    protected String email;
+
+    @Column(name = "PICTURE")
+    protected String picture;
 
     public User() {
     }
 
-    public User(String name, String email, String dni, String password, Role role) {
-        super(name, email, dni, password);
-        this.role = role;
+    public User(String auth0Id, String name, String email, String picture) {
+        this.auth0Id = auth0Id;
+        this.name = name;
+        this.email = email;
+        this.picture = picture;
     }
 
-    public Role getRole() {
-        return role;
+    public Long getId() {
+        return id;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Company getCompany() {
-        return company;
+    public String getAuth0Id() {
+        return auth0Id;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setAuth0Id(String auth0Id) {
+        this.auth0Id = auth0Id;
     }
 
-    public enum Role {
-        ADMINISTRATOR("Administrador"),
-        OPERATIONAL("Operativo");
-
-        final String type;
-
-        Role(String type) {
-            this.type = type;
-        }
-
-        public String getType() {
-            return type;
-        }
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String toString() {
-        return super.toString() +
-                "role=" + role;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

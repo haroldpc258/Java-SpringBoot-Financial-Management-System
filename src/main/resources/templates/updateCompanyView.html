@@ -3,38 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, secondaryUser-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Actualizar Empresa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="/css/styles.css" rel="stylesheet"/>
 </head>
-<body>
-    <main>
+<body class="bg-light">
+<div th:switch="${role.equals('ADMIN')}">
+    <main th:case="true">
+        <header>
+            <div class="position-fixed mt-2 mx-4 p-4">
+                <a th:href="@{'/' + ${userId} + '/enterprises/' + ${company.id}}">
+                    <i class="bi bi-arrow-left-circle-fill text-gradient" style="font-size: 2.5rem;"></i>
+                </a>
+            </div>
+        </header>
         <div class="px-4 py-5 my-3 text-center">
-            <h1 class="display-5 fw-bold mb-5" th:text="'Actualizando ' + ${company.getName()}"></h1>
+            <h1 class="display-5 fw-bolder mb-5"><span class="text-gradient d-inline"
+                                                       th:text="'Actualizando ' + ${company.getName()}"></span></h1>
             <div class="d-flex flex-colum justify-content-center">
-                <form th:action="@{'/enterprises/' + ${company.id} + '/update'}" th:method="put" th:object="${company}" class="col-md-8 gap-3 align-items-center" >
+                <form th:action="@{'/' + ${userId} + '/enterprises/' + ${company.id} + '/update'}" th:method="put"
+                      th:object="${company}" class="col-md-8 gap-3 align-items-center">
                     <div class="mb-3">
                         <label for="nit" class="form-label">NIT</label>
-                        <input th:field="*{nit}" type="text" class="form-control text-center" id="nit" th:placeholder="*{nit}">
+                        <input th:field="*{nit}" type="text" class="form-control text-center" id="nit"
+                               th:placeholder="*{nit}">
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
-                        <input th:field="*{name}" type="text" class="form-control text-center" id="name" th:placeholder="*{nit}">
+                        <input th:field="*{name}" type="text" class="form-control text-center" id="name"
+                               th:placeholder="*{nit}">
                     </div>
                     <div class="mb-3">
                         <label for="phoneNumber" class="form-label">Número de teléfono</label>
-                        <input th:field="*{phoneNumber}" type="text" class="form-control text-center" id="phoneNumber" th:placeholder="*{phoneNumber}">
+                        <input th:field="*{phoneNumber}" type="text" class="form-control text-center" id="phoneNumber"
+                               th:placeholder="*{phoneNumber}">
                     </div>
                     <div class="mb-3">
                         <label for="address" class="form-label">Dirección</label>
-                        <input th:field="*{address}" type="text" class="form-control text-center" id="address" th:placeholder="*{address}">
+                        <input th:field="*{address}" type="text" class="form-control text-center" id="address"
+                               th:placeholder="*{address}">
                     </div>
-                    <button type="submit" class="col-md-6 btn btn-primary fw-bold btn-block mt-3">Actualizar</button>
+                    <button onclick="return confirm('¿Estás seguro de que quieres realizar este cambio?')" type="submit"
+                            class="col-md-6 btn btn-primary fw-bold btn-block mt-3">Actualizar
+                    </button>
                 </form>
             </div>
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <main th:case="false">
+        <div class="container">
+            <div class="row justify-content-center align-items-center" style="height: 100vh;">
+                <div class="container py-5">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="bi bi-exclamation-triangle-fill flex-shrink-0"
+                                     viewBox="0 0 16 16" role="img" aria-label="Warning:" style="width: 200px">
+                                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                </svg>
+                                <h1 class="display-3 mb-3">¡Acceso Denegado!</h1>
+                                <p class="lead">Lo sentimos, no tienes permisos para acceder a este recurso.</p>
+                                <a href="/" class="btn btn-primary btn-lg">Regresar a la página principal</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<footer class="bg-light py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="text-muted col-auto">
+                <div class="small m-0">Copyright &copy; 2023 Proyecto Desarrollo de Software</div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>

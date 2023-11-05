@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, secondaryUser-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nuevo Empleado</title>
+    <title>Actualizar Empleado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -22,11 +22,10 @@
             </div>
         </header>
         <div class="px-4 py-5 my-3 text-center">
-            <h1 class="display-3 fw-bolder mb-5"><span class="text-gradient d-inline">Agregando empleado</span>
-            </h1>
+            <h1 class="display-5 fw-bolder mb-5"><span class="text-gradient d-inline">Actualizando empleado</span></h1>
             <div class="d-flex flex-colum justify-content-center">
-                <form th:action="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/users/create'}" th:method="post"
-                      th:object="${newUser}" class="col-md-8 gap-3 align-items-center">
+                <form th:action="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/users/' + ${secondaryUser.getId()} + '/update'}"
+                      th:method="put" th:object="${secondaryUser}" class="col-md-8 gap-3 align-items-center">
                     <div class="mb-3">
                         <label for="role" class="form-label">Rol</label>
                         <select th:field="*{role}" id="role" class="custom-select mr-sm-2 form-control text-center">
@@ -37,20 +36,20 @@
                     <div class="mb-3">
                         <label for="dni" class="form-label">DNI</label>
                         <input th:field="*{dni}" type="text" class="form-control text-center" id="dni"
-                               placeholder="Ingrese número de identificación del empleado">
+                               th:placeholder="${secondaryUser.getDni()}">
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nombre</label>
                         <input th:field="*{name}" type="text" class="form-control text-center" id="name"
-                               placeholder="Ingrese el nombre del empleado">
+                               th:placeholder="${secondaryUser.getName()}">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input th:field="*{email}" type="email" class="form-control text-center" id="email"
-                               placeholder="Ingrese el email del empleado">
+                               th:placeholder="${secondaryUser.getEmail()}">
                     </div>
-                    <button onclick="return confirm('¿Estás seguro de la información ingresada?')" type="submit"
-                            class="col-md-6 btn btn-primary fw-bold btn-block mt-3">Registrar Empleado
+                    <button onclick="return confirm('¿Estás seguro de que quieres realizar este cambio?')" type="submit"
+                            class="col-md-6 btn btn-primary fw-bold btn-block mt-3">Actualizar
                     </button>
                 </form>
             </div>

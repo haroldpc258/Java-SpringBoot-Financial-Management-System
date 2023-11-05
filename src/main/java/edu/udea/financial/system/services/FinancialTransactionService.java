@@ -2,7 +2,9 @@ package edu.udea.financial.system.services;
 
 import edu.udea.financial.system.entities.Company;
 import edu.udea.financial.system.entities.FinancialTransaction;
-import edu.udea.financial.system.entities.users.Employee;
+import edu.udea.financial.system.entities.users.PrincipalUser;
+import edu.udea.financial.system.entities.users.SecondaryUser;
+import edu.udea.financial.system.entities.users.User;
 import edu.udea.financial.system.repositories.FinancialTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,57 +17,58 @@ public class FinancialTransactionService {
 
     @Autowired
     private FinancialTransactionRepository financialTransactionRepository;
-
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private PrincipalUserService principalUserService;
+    @Autowired private SecondaryUserService secondaryUserService;
 
     public List<FinancialTransaction> getFinancialTransactions(Long companyId) {
         System.out.println(companyService.getCompanyById(companyId).getTransactions());
         return companyService.getCompanyById(companyId).getTransactions();
     }
 
-    public FinancialTransaction createFinancialTransaction(Long companyId, FinancialTransaction transaction) {
+    public FinancialTransaction createFinancialTransaction(Long userId, Long companyId, FinancialTransaction transaction) {
+
+        User user;
+        if (secondaryUserService.userExistsById(userId)) {
+            user = secondaryUserService.getUserById(userId);
+            transaction.setCreatedBy(user);
+            secondaryUserService.saveUser((SecondaryUser) user);
+        } else {
+            user = principalUserService.getUserById(userId);
+            transaction.setCreatedBy(user);
+            principalUserService.saveUser((PrincipalUser) user);
+        }
+
         Company company =  companyService.getCompanyById(companyId);
         company.getTransactions().add(transaction);
-        companyService.createCompany(company);
-        return financialTransactionRepository.save(transaction);
+        companyService.saveCompany(company);
+
+        return saveTransaction(transaction);
     }
+
 
     public FinancialTransaction getTransactionById(Long id) {
         return financialTransactionRepository.findById(id).get();
     }
 
-    public void updateTransaction(FinancialTransaction transaction) {
-        financialTransactionRepository.save(transaction);
+    public FinancialTransaction updateTransaction(FinancialTransaction updatedTransaction) {
+        FinancialTransaction transaction = getTransactionById(updatedTransaction.getId());
+        updatedTransaction.setCreatedBy(transaction.getCreatedBy());
+        updatedTransaction.setCreatedOn(transaction.getCreatedOnLocalDate());
+        return financialTransactionRepository.save(updatedTransaction);
     }
 
-    public FinancialTransaction patchFinancialTransactionById(Long companyId, Long id, Map<String, Object> updates) {
-
-        FinancialTransaction transaction = getTransactionById(id);
-
-        updates.forEach((key, value) -> {
-            switch (key) {
-                case "amount" -> transaction.setAmount((Double) value);
-                case "concept" -> transaction.setConcept((String) value);
-                case "createdOn" -> transaction.setCreatedOn((String) value);
-                case "type" -> transaction.setType(FinancialTransaction.Type.valueOf((String) value));
-                case "createdBy" -> transaction.setCreatedBy((Employee) value);
-                default -> throw new IllegalArgumentException("Campo de actualización no válido: " + key);
-            }
-        });
-        financialTransactionRepository.save(transaction);
-        return transaction;
+    public FinancialTransaction saveTransaction(FinancialTransaction transaction) {
+        return financialTransactionRepository.save(transaction);
     }
 
     public void deleteFinancialTransactionById(Long companyId, Long id) {
         Company company =  companyService.getCompanyById(companyId);
         company.getTransactions().remove(getTransactionById(id));
+        companyService.saveCompany(company);
         financialTransactionRepository.deleteById(id);
-        companyService.createCompany(company);
     }
 
-    public boolean transactionExists(Long companyId, Long id) {
-        return financialTransactionRepository.existsById(id) &&
-                companyService.getCompanyById(companyId).getTransactions().contains(financialTransactionRepository.getReferenceById(id));
-    }
 }

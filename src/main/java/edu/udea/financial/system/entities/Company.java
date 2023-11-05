@@ -1,7 +1,8 @@
 package edu.udea.financial.system.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import edu.udea.financial.system.entities.users.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import edu.udea.financial.system.entities.users.PrincipalUser;
+import edu.udea.financial.system.entities.users.SecondaryUser;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "NIT")
+    @Column(name = "NIT", unique = true)
     private String nit;
 
     @Column(name = "NAME")
@@ -28,9 +29,13 @@ public class Company {
     @Column(name = "ADDRESS")
     private String address;
 
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "PRINCIPAL_USER_ID")
+    private PrincipalUser owner;
+
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<User> employees;
+    private List<SecondaryUser> employees;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FinancialTransaction> transactions;
@@ -40,14 +45,6 @@ public class Company {
         transactions = new ArrayList<>();
     }
 
-    public Company(String nit, String name, String phoneNumber, String address, List<User> employees, List<FinancialTransaction> transactions) {
-        this.nit = nit;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.employees = employees;
-        this.transactions = transactions;
-    }
 
     public Long getId() {
         return id;
@@ -89,11 +86,11 @@ public class Company {
         this.address = address;
     }
 
-    public List<User> getEmployees() {
+    public List<SecondaryUser> getEmployees() {
         return employees;
     }
 
-    public void setEmployees(List<User> employees) {
+    public void setEmployees(List<SecondaryUser> employees) {
         this.employees = employees;
     }
 
@@ -105,12 +102,11 @@ public class Company {
         this.transactions = transactions;
     }
 
-    @Override
-    public String toString() {
-        return "Company -->" +
-                "nit='" + nit + '\'' +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", address='" + address + '\'';
+    public PrincipalUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(PrincipalUser owner) {
+        this.owner = owner;
     }
 }

@@ -3,48 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, secondaryUser-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mis Empleados</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="/css/styles.css" rel="stylesheet"/>
 </head>
-<body>
-    <main>
-        <div class="px-4 py-5 my-3 text-center">
-            <h1 class="display-5 fw-bold mb-1">Empleados</h1>
-            <a th:href="@{'/enterprises/' + ${company.getId()} + '/users/create'}" class="col-md-6 btn btn-primary fw-bold btn-lg btn-block my-5">Nuevo Empleado</a>
-            <div class="d-flex justify-content-center mt-3">
-                <div class="row row-cols-1 row-cols-md-4 g-4">
-                    <div th:each="user : ${company.getEmployees()}" class="col d-flex justify-content-center">
-                        <div class="card" style="width: 18rem;">
-                            <div th:switch="${user.getRole()}">
-                                <img th:case="${user.getRole().ADMINISTRATOR}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/5238/5238791.png" alt="movimientos" style="width: 150px">
-                                <img th:case="${user.getRole().OPERATIONAL}" class="card-img-top" src = "https://cdn-icons-png.flaticon.com/512/4247/4247142.png" alt="movimientos" style="width: 150px">
+<body class="bg-light">
+<main>
+    <header>
+        <div class="position-fixed mt-2 mx-4 p-4">
+            <a th:href="@{'/' + ${userId} + '/enterprises/' + ${company.getId()}}">
+                <i class="bi bi-arrow-left-circle-fill text-gradient" style="font-size: 2.5rem;"></i>
+            </a>
+        </div>
+    </header>
+    <div class="px-4 py-5 my-3 text-center">
+        <h1 class="display-3 fw-bolder mb-1"><span class="text-gradient d-inline">Empleados</span></h1>
+        <div th:if="${role.equals('ADMIN')}">
+            <a th:href="@{'/' + ${userId} + '/enterprises/' + ${company.getId()} + '/users/create'}"
+               class="col-md-6 btn btn-primary fw-bold btn-lg btn-block my-5">Nuevo empleado</a>
+        </div>
+        <div th:if="${alert}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-exclamation-triangle-fill flex-shrink-0"
+                 viewBox="0 0 16 16" role="img" aria-label="Warning:" style="width: 20px">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <strong>Error!</strong> No se puede realizar la operación debido a una violación de la integridad de los
+            datos.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="d-flex justify-content-center mt-3">
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                <div th:each="secondaryUser : ${company.getEmployees()}"
+                     class="col d-flex justify-content-center mx-auto mr-2">
+                    <div class="card" style="min-width: 18rem; width: auto; max-width: 100%;">
+                        <div th:switch="${secondaryUser.getPicture() == null}">
+                            <div th:case="true">
+                                <div th:switch="${secondaryUser.getRole()}">
+                                    <img th:case="${secondaryUser.getRole().ADMINISTRATOR}" class="card-img-top"
+                                         src="https://cdn-icons-png.flaticon.com/512/5238/5238791.png"
+                                         alt="administrador"
+                                         style="width: 150px">
+                                    <img th:case="${secondaryUser.getRole().OPERATIONAL}" class="card-img-top"
+                                         src="https://cdn-icons-png.flaticon.com/512/4247/4247142.png" alt="operativo"
+                                         style="width: 150px">
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <h3 class="card-title" th:text="${user.getName()}"></h3>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex flex-column align-items-center">
-                                        <div><span class="fw-bold">Tipo</span></div>
-                                        <div><span th:text="${user.getRole().getType()}"></span></div>
-                                    </li>
-                                    <li class="list-group-item d-flex flex-column align-items-center">
-                                        <div><span class="fw-bold">DNI</span></div>
-                                        <div><span th:text="${user.getDni()}"></span></div>
-                                    </li>
-                                    <li class="list-group-item d-flex flex-column align-items-center">
-                                        <div><span class="fw-bold">Email</span></div>
-                                        <div><span th:text="${user.getEmail()}"></span></div>
-                                    </li>
-                                </ul>
-                                <a th:href="@{'/enterprises/' + ${company.getId()} + '/users/' + ${user.getId()}}" class="btn btn-primary col-md-4">Ver</a>
+                            <div th:case="false">
+                                <img class="card-img-top" th:src="${secondaryUser.getPicture()}" alt="movimientos"
+                                     style="width: 150px">
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="card-title" th:text="${secondaryUser.getName()}"></h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex flex-column align-items-center">
+                                    <div><span class="fw-bold">Tipo</span></div>
+                                    <div><span th:text="${secondaryUser.getRole().getType()}"></span></div>
+                                </li>
+                                <li class="list-group-item d-flex flex-column align-items-center">
+                                    <div><span class="fw-bold">DNI</span></div>
+                                    <div><span th:text="${secondaryUser.getDni()}"></span></div>
+                                </li>
+                                <li class="list-group-item d-flex flex-column align-items-center">
+                                    <div><span class="fw-bold">Email</span></div>
+                                    <div><span th:text="${secondaryUser.getEmail()}"></span></div>
+                                </li>
+                            </ul>
+                            <div th:if="${role.equals('ADMIN')}">
+                                <a th:href="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/users/' + ${secondaryUser.getId()} + '/update'}"
+                                   class="btn btn-primary col-md-8">Modificar</a>
+                                <form th:action="@{'/' + ${userId} + '/enterprises/' + ${companyId} + '/users/' + ${secondaryUser.getId()}}"
+                                      th:method="delete">
+                                    <button onclick="return confirm('¿Estás seguro de eliminar este empleado?')"
+                                            class="col-md-8 btn btn-danger mt-2" type="submit">Eliminar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    </div>
+</main>
+<footer class="bg-light py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="text-muted col-auto">
+                <div class="small m-0">Copyright &copy; 2023 Proyecto Desarrollo de Software</div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>
